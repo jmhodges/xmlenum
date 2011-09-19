@@ -21,13 +21,13 @@ func main() {
 
 	firstElementName := flag.Args()[0]
 	filepaths := flag.Args()[1:]
-	files := make([]*os.File, 0, len(filepaths))
-	for _, fp := range filepaths {
+	files := make([]*os.File, len(filepaths))
+	for i, fp := range filepaths {
 		f, err := os.Open(fp)
 		if err != nil {
 			log.Fatalf("Couldn't open %s: %v\n", fp, err)
 		}
-		files = append(files, f)
+		files[i] = f
 		defer f.Close()
 	}
 
@@ -41,7 +41,7 @@ func main() {
 			log.Fatalf("Couldn't parse %s: %v\n", filepaths[i], err)
 		}
 	}
-	sortAndPrint(toplevel, 0)
+	sortedPrint(toplevel, 0)
 }
 
 func start(p *xml.Parser, name string, m TagMap) os.Error {
@@ -101,7 +101,7 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 }
 
 // Print tags that contain only text first, then tags with children.
-func sortAndPrint(m TagMap, indent int) {
+func sortedPrint(m TagMap, indent int) {
 	firstHalf := make([]string, 0, len(m))
 	secondHalf := make([]string, 0, len(m))
 	for k,v := range m {
@@ -119,7 +119,7 @@ func sortAndPrint(m TagMap, indent int) {
 		v := m[k]
 		if v != nil {
 			fmt.Printf(": {\n")
-			sortAndPrint(v, indent+4)
+			sortedPrint(v, indent+4)
 			fmt.Printf("%*s}\n", indent, " ")
 		} else {
 			fmt.Printf("\n",)
