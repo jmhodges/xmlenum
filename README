@@ -1,0 +1,7 @@
+usage: xmlenum FIRST_ELEMENT_NAME FILES*
+
+enumerate all tags in a (possibly large) xml file
+    
+Assumes that the cardinality of tag names is not too large, that no
+tag names are shared between namespaces, that the file is well-formed, and
+that no tags are ended in the wrong order.
