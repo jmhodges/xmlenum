@@ -35,7 +35,7 @@ func main() {
 
 	for i, f := range files {
 		p := xml.NewParser(f)
-	
+
 		err := start(p, firstElementName, toplevel)
 		if err != nil && err != os.EOF {
 			log.Fatalf("Couldn't parse %s: %v\n", filepaths[i], err)
@@ -104,7 +104,7 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 func sortedPrint(m TagMap, indent int) {
 	firstHalf := make([]string, 0, len(m))
 	secondHalf := make([]string, 0, len(m))
-	for k,v := range m {
+	for k, v := range m {
 		if v == nil {
 			firstHalf = append(firstHalf, k)
 		} else {
@@ -114,7 +114,7 @@ func sortedPrint(m TagMap, indent int) {
 	sort.Strings(firstHalf)
 	sort.Strings(secondHalf)
 	keys := append(firstHalf, secondHalf...)
-	for _,k := range keys {
+	for _, k := range keys {
 		fmt.Printf("%*s%s", indent, " ", k)
 		v := m[k]
 		if v != nil {
@@ -122,7 +122,7 @@ func sortedPrint(m TagMap, indent int) {
 			sortedPrint(v, indent+4)
 			fmt.Printf("%*s}\n", indent, " ")
 		} else {
-			fmt.Printf("\n",)
+			fmt.Printf("\n")
 		}
 	}
 }
