@@ -100,18 +100,18 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 
 // Print tags that contain only text first, then tags with children.
 func sortedPrint(m TagMap, indent int) {
-	firstHalf := make([]string, 0, len(m))
-	secondHalf := make([]string, 0, len(m))
+	simple := make([]string, 0, len(m))
+	nested := make([]string, 0, len(m))
 	for k, v := range m {
 		if v == nil {
-			firstHalf = append(firstHalf, k)
+			simple = append(simple, k)
 		} else {
-			secondHalf = append(secondHalf, k)
+			nested = append(nested, k)
 		}
 	}
-	sort.Strings(firstHalf)
-	sort.Strings(secondHalf)
-	keys := append(firstHalf, secondHalf...)
+	sort.Strings(simple)
+	sort.Strings(nested)
+	keys := append(simple, nested...)
 	for _, k := range keys {
 		fmt.Printf("%*s%s", indent, " ", k)
 		v := m[k]
