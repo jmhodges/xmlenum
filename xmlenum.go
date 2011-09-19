@@ -72,13 +72,11 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			if m[name] == nil {
-				newm := TagMap(make(map[string]TagMap))
-				m[name] = newm
-			}
-			nextm := m[name]
 			hasRecursed = true
-			err = recurse(p, t.Name.Local, nextm)
+			if m[name] == nil {
+				m[name] = TagMap{}
+			}
+			err = recurse(p, t.Name.Local, m[name])
 			if err != nil {
 				return err
 			}
