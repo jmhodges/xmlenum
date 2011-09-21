@@ -64,7 +64,7 @@ func start(p *xml.Parser, name string, m TagMap) os.Error {
 }
 
 func recurse(p *xml.Parser, name string, m TagMap) os.Error {
-	hasRecursed := false
+	hasChildren := false
 	for {
 		tok, err := p.Token()
 		if err != nil {
@@ -72,7 +72,7 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			hasRecursed = true
+			hasChildren = true
 			if m[name] == nil {
 				m[name] = TagMap{}
 			}
@@ -81,11 +81,11 @@ func recurse(p *xml.Parser, name string, m TagMap) os.Error {
 				return err
 			}
 		case xml.EndElement:
-			// If hasRecursed stays false, we are in a tag that only contained
+			// If hasChildren stays false, we are in a tag that only contained
 			// text, no child tags. We use this instead of `case xml.CharData`
 			// because CharData can pop up as a token even between
 			// StartElements, etc.
-			if !hasRecursed {
+			if !hasChildren {
 				m[name] = nil
 			}
 
