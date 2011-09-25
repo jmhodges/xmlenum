@@ -113,12 +113,15 @@ func sortedPrint(m TagMap, indent int) {
 	sort.Strings(nested)
 	keys := append(simple, nested...)
 	for _, k := range keys {
-		fmt.Printf("%*s%s", indent, " ", k)
+		if (indent > 0) {
+			fmt.Printf("%*s%s", indent, " ", k)
+		} else {
+			fmt.Printf("%s", k)
+		}
 		v := m[k]
 		if v != nil {
-			fmt.Printf(": {\n")
+			fmt.Printf("\n")
 			sortedPrint(v, indent+4)
-			fmt.Printf("%*s}\n", indent, " ")
 		} else {
 			fmt.Printf("\n")
 		}
