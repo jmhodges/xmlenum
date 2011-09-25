@@ -11,6 +11,11 @@ import (
 
 type TagMap map[string]TagMap
 
+var (
+	depth = 0 // debugging
+	maxDepth = 10
+)
+
 func main() {
 	log.SetPrefix("")
 	log.SetFlags(0)
@@ -46,6 +51,9 @@ func main() {
 
 func start(p *xml.Parser, name string, m TagMap) os.Error {
 	for {
+		// if depth > maxDepth { // debugging
+		// 	return nil
+		// }
 		tok, err := p.Token()
 		if err != nil {
 			return err
@@ -53,7 +61,8 @@ func start(p *xml.Parser, name string, m TagMap) os.Error {
 		switch t := tok.(type) {
 		case xml.StartElement:
 			if t.Name.Local == name {
-				err = recurse(p, name, m)
+				m[name] = TagMap{}
+				err = recurse(p, name, m[name])
 			}
 		}
 		if err != nil {
@@ -62,33 +71,26 @@ func start(p *xml.Parser, name string, m TagMap) os.Error {
 	}
 	return nil
 }
-
 func recurse(p *xml.Parser, name string, m TagMap) os.Error {
-	hasChildren := false
+	// depth++ // debugging
 	for {
+		// if depth > maxDepth { // debugging
+		// 	return nil
+		// }
 		tok, err := p.Token()
 		if err != nil {
 			return err
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			hasChildren = true
-			if m[name] == nil {
-				m[name] = TagMap{}
+			if m[t.Name.Local] == nil {
+				m[t.Name.Local] = TagMap{}
 			}
-			err = recurse(p, t.Name.Local, m[name])
+			err = recurse(p, t.Name.Local, m[t.Name.Local])
 			if err != nil {
 				return err
 			}
 		case xml.EndElement:
-			// If hasChildren stays false, we are in a tag that only contained
-			// text, no child tags. We use this instead of `case xml.CharData`
-			// because CharData can pop up as a token even between
-			// StartElements, etc.
-			if !hasChildren {
-				m[name] = nil
-			}
-
 			// If ending the element we entered recurse for, return
 			if t.Name.Local == name {
 				return nil
@@ -103,7 +105,7 @@ func sortedPrint(m TagMap, indent int) {
 	simple := make([]string, 0, len(m))
 	nested := make([]string, 0, len(m))
 	for k, v := range m {
-		if v == nil {
+		if len(v) == 0 {
 			simple = append(simple, k)
 		} else {
 			nested = append(nested, k)
