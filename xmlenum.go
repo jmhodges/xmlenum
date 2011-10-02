@@ -61,7 +61,9 @@ func start(p *xml.Parser, name string, m TagMap) os.Error {
 		switch t := tok.(type) {
 		case xml.StartElement:
 			if t.Name.Local == name {
-				m[name] = TagMap{}
+				if _, found := m[name]; !found {
+					m[name] = TagMap{}
+				}
 				err = recurse(p, name, m[name])
 			}
 		}
